@@ -1,41 +1,60 @@
-import axios from "axios";
-import { toast } from "react-toastify"; // Import Toastify jika ingin notifikasi
+import { useState } from "react";
+import PropTypes from "prop-types"; // Import PropTypes
+// import axios from "axios"; // Hapus import axios langsung
+import { toast } from "react-toastify";
 
-export const backendUrl = import.meta.env.VITE_BACKEND_URL;
+import api from "../context/api";
 
-const api = axios.create({
-  baseURL: backendUrl,
-});
+const ForgotPassword = ({ closeModal }) => {
+  const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Tambahkan state isLoading
 
-// Interceptor untuk menyesuaikan headers sebelum request dikirim
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-
-  if (token) {
-    config.headers["Authorization"] = `Bearer ${token}`; // Tambahkan token ke headers
-  }
-
-  if (config.data instanceof FormData) {
-    config.headers["Content-Type"] = "multipart/form-data";
-  } else {
-    config.headers["Content-Type"] = "application/json";
-  }
-  return config;
-});
-
-// Interceptor untuk menangani response error 401 (Unauthorized)
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("token"); // Hapus token dari localStorage
-
-      toast.error("Sesi telah berakhir, silakan login kembali"); // Notifikasi ke user
-
-      window.location.href = "/login"; // Redirect ke halaman login
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Email cannot be empty!");
+      return;
     }
-    return Promise.reject(error);
-  }
-);
 
-export default api;
+    setIsLoading(true); // Mulai loading
+    try {
+      // Ubah axios.post menjadi api.post
+      // Dan hapus VITE_BACKEND_URL karena sudah ada di baseURL instance 'api'
+      const { data } = await api.post("/api/user/forgot-password", { email }); // <--- PERUBAHAN DI SINI
+      toast.success(data.message);
+      closeModal(); // Tutup modal setelah berhasil
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Something went wrong");
+    } finally {
+      setIsLoading(false); // Hentikan loading setelah request selesai
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <input
+        type="email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        className="w-full p-2 border rounded"
+        disabled={isLoading} // Nonaktifkan input saat loading
+      />
+      <button
+        type="submit"
+        className="w-full p-2 bg-blue-500 text-white rounded disabled:bg-gray-400"
+        disabled={isLoading} // Mencegah tombol ditekan dua kali
+      >
+        {isLoading ? "Sending..." : "Send Reset Link"}
+      </button>
+    </form>
+  );
+};
+
+// ✅ Validasi props dengan prop-types agar ESLint tidak error
+ForgotPassword.propTypes = {
+  closeModal: PropTypes.func.isRequired, // `closeModal` harus berupa fungsi dan wajib ada
+};
+
+export default ForgotPassword;
