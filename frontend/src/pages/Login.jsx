@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from "react";
-import loginImg from "../assets/Login.jpg";
+import loginImg from "../assets/login.jpg";
 import signupImg from "../assets/signup.jpg";
 import { ShopContext } from "../context/ShopContextDef";
 import { toast } from "react-toastify";
