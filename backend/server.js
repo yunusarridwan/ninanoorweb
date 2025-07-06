@@ -38,25 +38,22 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 
 const allowedOrigins = [
-  'http://localhost:3000', // Port default React/Vite
-  'http://localhost:5173', // Port default Vite
-  'https://9adf-110-138-92-3.ngrok-free.app', // URL ngrok frontend Vite Anda (HARUS YANG AKTIF SAAT INI)
-
-  // Tambahkan URL ngrok frontend Anda yang lain jika ada
+  'https://ninanoor.vercel.app', // URL frontend Anda yang dideploy di Vercel
+  'https://ninanoor-admin.vercel.app', // URL frontend Anda yang dideploy di Vercel
+  // === TAMBAHKAN INI ===
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // Izinkan permintaan tanpa origin (misal Postman)
+    if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) === -1) {
       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
       return callback(new Error(msg), false);
     }
     return callback(null, true);
   },
-  credentials: true, // Penting jika Anda menggunakan cookie atau sesi
+  credentials: true,
 }));
-
 // API Endpoints
 // Note: Some of your route files are inside 'routes/api', so the base path should reflect that.
 app.use("/api/admin", adminRoute);
