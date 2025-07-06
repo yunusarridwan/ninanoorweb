@@ -1,7 +1,9 @@
 import { useState } from "react";
 import PropTypes from "prop-types"; // Import PropTypes
-import axios from "axios";
+// import axios from "axios"; // Hapus import axios langsung
 import { toast } from "react-toastify";
+
+import api from "../context/api";
 
 const ForgotPassword = ({ closeModal }) => {
   const [email, setEmail] = useState("");
@@ -16,10 +18,9 @@ const ForgotPassword = ({ closeModal }) => {
 
     setIsLoading(true); // Mulai loading
     try {
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/user/forgot-password`,
-        { email }
-      );
+      // Ubah axios.post menjadi api.post
+      // Dan hapus VITE_BACKEND_URL karena sudah ada di baseURL instance 'api'
+      const { data } = await api.post("/api/user/forgot-password", { email }); // <--- PERUBAHAN DI SINI
       toast.success(data.message);
       closeModal(); // Tutup modal setelah berhasil
     } catch (error) {
