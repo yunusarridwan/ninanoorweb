@@ -341,10 +341,6 @@ ninanoorweb/
 └── .gitignore
 ```
 
-## Contributing
-
-Contributions are welcome\! Please feel free to open issues or submit pull requests.
-
 ## License
 
 This project is licensed under the MIT License.
